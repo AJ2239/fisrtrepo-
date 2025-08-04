@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
 
 //  Yup schema for login
 const loginSchema = yup.object().shape({
@@ -15,31 +17,51 @@ function Login() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }, 
     reset,
   } = useForm({
     resolver: yupResolver(loginSchema),
   });
 
-  const onSubmit = (data) => {
-    const userData = JSON.parse(localStorage.getItem(data.email));
+  // const onSubmit = (data) => {
+  //   const userData = JSON.parse(localStorage.getItem(data.email));
     
-    if (userData) {
-      if (userData.password === data.password) {
-        // alert(userData.fname + userData.lname + " you are successfully logged in!");
-        localStorage.setItem("isLoggedIn", true);
-        localStorage.setItem("loggedInEmail", data.email);
-         localStorage.setItem("loggedinname", `${userData.fname} ${userData.lname}`);
-        reset();
-        navigate("/home");
-      } else {
-        alert("Password is incorrect!");
-      }
-    } else {
-      alert("Email or Password is incorrect!");
+  //   if (userData) {
+  //     if (userData.password === data.password) {
+  //       // alert(userData.fname + userData.lname + " you are successfully logged in!");
+  //       localStorage.setItem("isLoggedIn", true);
+  //       localStorage.setItem("loggedInEmail", data.email);
+  //        localStorage.setItem("loggedinname", `${userData.fname} ${userData.lname}`);
+  //       reset();
+  //       navigate("/home");
+  //     } else {
+  //       alert("Password is incorrect!");
+  //     }
+  //   } else {
+  //     alert("Email or Password is incorrect!");
+  //   }
+  // };
+    
+  const onSubmit = async (data) => {
+    try {
+     const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+const user = userCredential.user; //  define user here
+localStorage.setItem("uid", user.uid); 
+      
+      localStorage.setItem("isLoggedIn", true);
+      localStorage.setItem("loggedInEmail", data.email);
+      //  localStorage.setItem("loggedinname", data.fname + " " + data.lname);
+       
+      // alert("Login successful!");
+
+      reset();
+      navigate("/home");
+    } catch (error) {
+      alert("Login failed: " + error.message);
     }
   };
-
+ 
+ 
   return (
     <>
       <h2 className="text-2xl font-bold text-center mb-6 text-blue-500">Login</h2>
