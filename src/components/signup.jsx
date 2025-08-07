@@ -20,11 +20,11 @@ const signupSchema = yup.object().shape({
   password: yup
     .string()
     .min(8, "Password must be at least 8 characters"),
-//     .matches(/[A-Z]/, "At least one uppercase letter is required")
-//   .matches(/[a-z]/, "At least one lowercase letter is required")
-//   .matches(/[0-9]/, "At least one number is required")
-//   .matches(/[^A-Za-z0-9]/, "At least one special character is required")
-//     .required("Password is required"),
+    .matches(/[A-Z]/, "At least one uppercase letter is required")
+  .matches(/[a-z]/, "At least one lowercase letter is required")
+  .matches(/[0-9]/, "At least one number is required")
+  .matches(/[^A-Za-z0-9]/, "At least one special character is required")
+    .required("Password is required"),
     cpassword: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match')
         .required('Confirm Password is required'),
 });
