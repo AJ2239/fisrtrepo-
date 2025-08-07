@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState ,useRef} from 'react';
 import StudentChild from './studentchild';
 import { useNavigate } from "react-router-dom";
 import user from "./studentlogin.png";
@@ -24,6 +24,20 @@ const Student = () => {
   const [selectedColor, setSelectedColor] = useState('bg-blue-200');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [editId, setEditId] = useState(null);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const logout = () => {
     localStorage.removeItem("isLoggedIn");
@@ -129,26 +143,29 @@ const Student = () => {
   return (
     <div className='h-screen flex bg-teal-900 pt-3'>
       {/* User dropdown */}
-      <div className="absolute top-4 right-6 z-50 bg-red-200">
-        <button
-          onClick={() => setDropdownOpen(!dropdownOpen)}
-          className="bg-white text-cyan-900 px-4 py-2 rounded hover:bg-gray-200 shadow flex items-center gap-2"
-        >
-          <img src={user} alt="user" className='size-8' />
-          {auth.currentUser?.displayName || ''}
-        </button>
+      <div
+      ref={dropdownRef}
+      className="absolute top-4 right-6 z-50 bg-red-200"
+    >
+      <button
+        onClick={() => setDropdownOpen(!dropdownOpen)}
+        className="bg-white text-cyan-900 px-4 py-2 rounded hover:bg-gray-200 shadow flex items-center gap-2 "
+      >
+        <img src={user} alt="user" className="size-8 " />
+        {auth.currentUser?.displayName || ""}
+      </button>
 
-        {dropdownOpen && (
-          <div className="mt-2 bg-white border rounded shadow w-40 absolute right-0">
-            <button
-              onClick={logout}
-              className="block w-full px-4 py-2 text-left text-red-600 hover:bg-red-100"
-            >
-              Logout
-            </button>
-          </div>
-        )}
-      </div>
+      {dropdownOpen && (
+        <div className="mt-2 bg-white border rounded shadow w-40 absolute right-0 ">
+          <button
+            onClick={logout}
+            className="block w-full px-4 py-2 text-center text-red-600 hover:bg-red-100 "
+          >
+            Logout
+          </button>
+        </div>
+      )}
+    </div>
 
       {/* Main Section */}
       <div className="flex-1">
